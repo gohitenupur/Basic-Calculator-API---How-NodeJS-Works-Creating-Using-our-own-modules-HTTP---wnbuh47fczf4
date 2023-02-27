@@ -7,121 +7,129 @@ app.use(express.urlencoded());
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
+// GET request for the home page
 app.get("/", (req, res) => {
   res.send("Hello world!");
 });
 
+// POST request for addition
 app.post("/add", (req, res) => {
-  const num1 = req.body.num1;
-  const num2 = req.body.num2;
-
+  const num1 = Number(req.body.num1);
+  const num2 = Number(req.body.num2);
   if (isNaN(num1) || isNaN(num2)) {
-    return res.json({
+    res.json({
       status: "error",
-      message: "Invalid data types",
-      sum: null
+      message: "Invalid data types"
+    });
+  } else if (num1 < -1000000 || num2 < -1000000 || num1 + num2 < -1000000) {
+    res.json({
+      status: "error",
+      message: "Underflow"
+    });
+  } else if (num1 > 1000000 || num2 > 1000000 || num1 + num2 > 1000000) {
+    res.json({
+      status: "error",
+      message: "Overflow"
+    });
+  } else {
+    const sum = num1 + num2;
+    res.json({
+      status: "success",
+      message: "The sum of given two numbers",
+      sum: sum
     });
   }
-  if (num1 + num2 > 1000000) {
-    return res.json({
-      status: "error",
-      message: "overflow",
-      sum: null
-    });
-  }
-  const sum = num1 + num2;
-
-  res.json({
-    status: "success",
-    message: "The sum of given two numbers",
-    sum: sum
-  });
 });
 
+// POST request for subtraction
 app.post("/sub", (req, res) => {
-  const num1 = req.body.num1;
-  const num2 = req.body.num2;
-
+  const num1 = Number(req.body.num1);
+  const num2 = Number(req.body.num2);
   if (isNaN(num1) || isNaN(num2)) {
     res.json({
       status: "error",
-      message: "Invalid data types",
-      sub: null
+      message: "Invalid data types"
     });
-  }
-
-  if (num1 - num2 < -1000000) {
+  } else if (num1 < -1000000 || num2 < -1000000 || num1 - num2 < -1000000) {
     res.json({
       status: "error",
-      message: "underflow",
-      sub: null
+      message: "Underflow"
+    });
+  } else if (num1 > 1000000 || num2 > 1000000 || num1 - num2 > 1000000) {
+    res.json({
+      status: "error",
+      message: "Overflow"
+    });
+  } else {
+    const difference = num1 - num2;
+    res.json({
+      status: "success",
+      message: "The difference of given two numbers",
+      difference: difference
     });
   }
-
-  const sub = num1 - num2;
-
-  res.json({
-    status: "success",
-    message: "The difference of given two numbers",
-    sub: sub
-  });
 });
+
+// POST request for multiplication
 app.post("/multiply", (req, res) => {
-  const num1 = req.body.num1;
-  const num2 = req.body.num2;
-
+  const num1 = Number(req.body.num1);
+  const num2 = Number(req.body.num2);
   if (isNaN(num1) || isNaN(num2)) {
     res.json({
       status: "error",
-      message: "Invalid data types",
-      multi: null
+      message: "Invalid data types"
     });
-  }
-
-  if (num1 * num2 > 1000000) {
+  } else if (num1 < -1000000 || num2 < -1000000 || num1 * num2 < -1000000) {
     res.json({
       status: "error",
-      message: "overflow",
-      multi: null
+      message: "Underflow"
+    });
+  } else if (num1 > 1000000 || num2 > 1000000 || num1 * num2 > 1000000) {
+    res.json({
+      status: "error",
+      message: "Overflow"
+    });
+  } else {
+    const result = num1 * num2;
+    res.json({
+      status: "success",
+      message: "The product of given numbers",
+      result: result
     });
   }
-
-  const multi = num1 * num2;
-
-  res.json({
-    status: "success",
-    message: "The product of given numbers",
-    multi: multi
-  });
 });
-
 app.post("/divide", (req, res) => {
-  const num1 = req.body.num1;
-  const num2 = req.body.num2;
-
+  const num1 = Number(req.body.num1);
+  const num2 = Number(req.body.num2);
   if (isNaN(num1) || isNaN(num2)) {
     res.json({
       status: "error",
-      message: "Invalid data types",
-      div: null
+      message: "Invalid data types"
     });
-  }
-
-  if (num2 === 0) {
+  } else if (num1 < -1000000 || num2 < -1000000 || num1 * num2 < -1000000) {
+    res.json({
+      status: "error",
+      message: "Underflow"
+    });
+  } else if (num1 > 1000000 || num2 > 1000000 || num1 * num2 > 1000000) {
+    res.json({
+      status: "error",
+      message: "Overflow"
+    });
+  } else if (num2 === 0) {
     res.json({
       status: "error",
       message: "Cannot divide by zero",
       div: null
     });
+  } else {
+    const result = num1 / num2;
+    res.json({
+      status: "success",
+      message: "The product of given numbers",
+      result: result
+    });
   }
-
-  const div = num1 / num2;
-
-  res.json({
-    status: "success",
-    message: "The product of given numbers",
-    div: div
-  });
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));
