@@ -1,141 +1,149 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const port = 3000;
-app.use(express.urlencoded());
+//To Read The Contents of the Body
 
-// Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
-// GET request for the home page
-app.get("/", (req, res) => {
+const port = 3000;
+
+function isUnderflow(parameter) {
+  if (parameter < -1000000) {
+    return true;
+  }
+  return false;
+}
+
+function isOverflow(parameter) {
+  if (parameter > 1000000) {
+    return true;
+  }
+  return false;
+}
+
+function validateRequest(num1, num2, result) {
+  if (typeof num1 === "string" || typeof num2 === "string") {
+    return {
+      status: "error",
+      message: "Invalid data types",
+    };
+  } else if (isOverflow(num1) || isOverflow(num2) || isOverflow(result)) {
+    return {
+      status: "error",
+      message: "Overflow",
+    };
+  } else if (isUnderflow(num1) || isUnderflow(num2) || isUnderflow(result)) {
+    return {
+      status: "error",
+      message: "Underflow",
+    };
+  } else {
+    return null;
+  }
+}
+app.get("/", function (req, res) {
   res.send("Hello world!");
 });
+app.post("/add", function (req, res) {
+  //We need Two Numbers to Add
+  //In Post Request The Data is Sent in the Body
+  //Request Magic
+  //Read The request Body Data
 
-// POST request for addition
-app.post("/add", (req, res) => {
-  const num1 = Number(req.body.num1);
-  const num2 = Number(req.body.num2);
-  if (isNaN(num1) || isNaN(num2)) {
-    res.json({
-      status: "error",
-      message: "Invalid data types"
-    });
-  } else if (num1 < -1000000 || num2 < -1000000 || num1 + num2 < -1000000) {
-    res.json({
-      status: "error",
-      message: "Underflow"
-    });
-  } else if (num1 > 1000000 || num2 > 1000000 || num1 + num2 > 1000000) {
-    res.json({
-      status: "error",
-      message: "Overflow"
-    });
+  //1. Understand the Request
+  const { num1, num2 } = req.body;
+  const sum = num1 + num2;
+  const requestNotValidated = validateRequest(num1, num2, sum);
+  if (requestNotValidated) {
+    res.send(requestNotValidated);
   } else {
-    const sum = num1 + num2;
-    res.json({
+    //Create A Response
+    const response = {
       status: "success",
-      message: "The sum of given two numbers",
-      sum: sum
-    });
+      message: `the sum of given two numbers`,
+      sum: sum,
+    };
+    res.send(response);
+  }
+  //3. Send the Response
+});
+
+app.post("/sub", function (req, res) {
+  //We need Two Numbers to Add
+  //In Post Request The Data is Sent in the Body
+  //Request Magic
+  //Read The request Body Data
+
+  //1. Understand the Request
+  const { num1, num2 } = req.body;
+  const difference = num1 - num2;
+  const requestNotValidated = validateRequest(num1, num2, difference);
+  if (requestNotValidated) {
+    res.send(requestNotValidated);
+  } else {
+    //Create A Response
+    const response = {
+      status: "success",
+      message: `the difference of given two numbers`,
+      difference: difference,
+    };
+    //3. Send the Response
+    res.send(response);
   }
 });
 
-// POST request for subtraction
-app.post("/sub", (req, res) => {
-  const num1 = Number(req.body.num1);
-  const num2 = Number(req.body.num2);
-  if (isNaN(num1) || isNaN(num2)) {
-    res.json({
-      status: "error",
-      message: "Invalid data types"
-    });
-  } else if (num1 < -1000000 || num2 < -1000000 || num1 - num2 < -1000000) {
-    res.json({
-      status: "error",
-      message: "Underflow"
-    });
-  } else if (num1 > 1000000 || num2 > 1000000 || num1 - num2 > 1000000) {
-    res.json({
-      status: "error",
-      message: "Overflow"
-    });
+app.post("/multiply", function (req, res) {
+  //We need Two Numbers to Add
+  //In Post Request The Data is Sent in the Body
+  //Request Magic
+  //Read The request Body Data
+
+  //1. Understand the Request
+  const { num1, num2 } = req.body;
+  const result = num1 * num2;
+  const requestNotValidated = validateRequest(num1, num2, result);
+  if (requestNotValidated) {
+    res.send(requestNotValidated);
   } else {
-    const difference = num1 - num2;
-    res.json({
+    //Create A Response
+    const response = {
       status: "success",
-      message: "The difference of given two numbers",
-      difference: difference
-    });
+      message: `The product of given numbers`,
+      result: result,
+    };
+    //3. Send the Response
+    res.send(response);
   }
 });
 
-// POST request for multiplication
-app.post("/multiply", (req, res) => {
-  const num1 = Number(req.body.num1);
-  const num2 = Number(req.body.num2);
-  if (isNaN(num1) || isNaN(num2)) {
-    res.json({
-      status: "error",
-      message: "Invalid data types"
-    });
-  } else if (num1 < -1000000 || num2 < -1000000 || num1 * num2 < -1000000) {
-    res.json({
-      status: "error",
-      message: "Underflow"
-    });
-  } else if (num1 > 1000000 || num2 > 1000000 || num1 * num2 > 1000000) {
-    res.json({
-      status: "error",
-      message: "Overflow"
-    });
-  } else {
-    const result = num1 * num2;
-    res.json({
-      status: "success",
-      message: "The product of given numbers",
-      result: result
-    });
-  }
-});
-app.post("/divide", (req, res) => {
-  const num1 = Number(req.body.num1);
-  const num2 = Number(req.body.num2);
-  if (isNaN(num1) || isNaN(num2)) {
-    res.json({
-      status: "error",
-      message: "Invalid data types"
-    });
-  } else if (num1 < -1000000 || num2 < -1000000 || num1 * num2 < -1000000) {
-    res.json({
-      status: "error",
-      message: "Underflow"
-    });
-  } else if (num1 > 1000000 || num2 > 1000000 || num1 * num2 > 1000000) {
-    res.json({
-      status: "error",
-      message: "Overflow"
-    });
-  } else if (num2 === 0) {
-    res.json({
+app.post("/divide", function (req, res) {
+  //We need Two Numbers to Add
+  //In Post Request The Data is Sent in the Body
+  //Request Magic
+  //Read The request Body Data
+
+  //1. Understand the Request
+  const { num1, num2 } = req.body;
+  const result = num1 / num2;
+  const requestNotValidated = validateRequest(num1, num2, result);
+
+  if (num2 === 0) {
+    res.send({
       status: "error",
       message: "Cannot divide by zero",
-      div: null
     });
+  } else if (requestNotValidated) {
+    res.send(requestNotValidated);
   } else {
-    const result = num1 / num2;
-    res.json({
+    //Create A Response
+    const response = {
       status: "success",
-      message: "The product of given numbers",
-      result: result
-    });
+      message: `The division of given numbers`,
+      result: result,
+    };
+    //3. Send the Response
+    res.send(response);
   }
 });
-
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(bodyParser.json());
-// your code goes here
 
 app.listen(port, () => console.log(`App listening on port ${port}!`));
 
